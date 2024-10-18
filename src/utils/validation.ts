@@ -9,6 +9,7 @@ export const isValidPassword = (password: string) => {
         password.match(/\d+/g) &&
         password.match(/[a-z]+/g) &&
         password.match(/[A-Z]+/g) &&
-        password.match(/[.!#$@%&'*+/=?^_`{|}~-]+/g)
+        password.match(/[.!#$@%&'*+/=?^_`{|}~-]+/g) &&
+        password.length >= 8
     );
 };

@@ -15,6 +15,7 @@ function LabeledLinearProgress(props: LinearProgressProps & { value: number }) {
                 <Typography
                     variant="body2"
                     sx={{ color: 'text.secondary' }}
+                    data-testid="linear-progress-percentage"
                 >{`${Math.round(props.value)}%`}</Typography>
             </Box>
         </Box>

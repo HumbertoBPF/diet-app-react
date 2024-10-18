@@ -41,16 +41,19 @@ function FoodItem({ foodItem, onClick, onDelete }: FoodItemProps) {
                     edge="end"
                     aria-label="delete"
                     onClick={handleDelete}
+                    data-testid="delete-button"
                 >
                     <Delete />
                 </IconButton>
             }
+            data-testid={`food-item-${foodItem.id}`}
         >
             <ListItemAvatar>
                 <Avatar sx={{ p: '4px' }}>
                     <Typography
                         textAlign="center"
                         variant="caption"
+                        data-testid="number-kcals"
                     >{`${nbKcals} kcals`}</Typography>
                 </Avatar>
             </ListItemAvatar>

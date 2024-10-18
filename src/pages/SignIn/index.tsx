@@ -7,7 +7,7 @@ import {
     InputAdornment,
     TextField,
 } from '@mui/material';
-import axiosInstance from 'api/http';
+import { getUser, signin } from 'api/endpoints';
 import Snackbar from 'components/Snackbar';
 import { setUser } from 'features/userSlice';
 import { useAppDispatch } from 'hooks/useAppDispatch';
@@ -30,24 +30,28 @@ function SignIn() {
     const navigate = useNavigate();
 
     const fetchUser = () => {
-        axiosInstance()
-            .get('/user')
+        getUser()
             .then((response) => {
                 const { data } = response;
                 dispatch(setUser(data));
                 navigate('/home');
             })
-            .catch(() => {});
+            .catch(() => {
+                setMessage({
+                    text: 'Error when fetching user data',
+                    open: true,
+                    variant: 'error',
+                });
+            });
     };
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        axiosInstance()
-            .post('/login', {
-                email,
-                password,
-            })
+        signin({
+            email,
+            password,
+        })
             .then((response) => {
                 const { data } = response;
                 const { token } = data;
@@ -91,6 +95,11 @@ function SignIn() {
                         type="email"
                         variant="standard"
                         value={email}
+                        slotProps={{
+                            htmlInput: {
+                                'data-testid': 'email-input',
+                            },
+                        }}
                     />
                     <TextField
                         fullWidth
@@ -118,6 +127,10 @@ function SignIn() {
                                     </InputAdornment>
                                 ),
                             },
+
+                            htmlInput: {
+                                'data-testid': 'password-input',
+                            },
                         }}
                         sx={{ mt: '8px' }}
                         type={passwordVisible ? 'text' : 'password'}
@@ -128,6 +141,7 @@ function SignIn() {
                         sx={{ mt: '16px' }}
                         type="submit"
                         variant="contained"
+                        data-testid="submit-button"
                     >
                         Sign in
                     </Button>

@@ -33,8 +33,12 @@ function ConfirmDeletionDialog({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={onConfirm}>Confirm</Button>
+                <Button onClick={onClose} data-testid="cancel-button">
+                    Cancel
+                </Button>
+                <Button onClick={onConfirm} data-testid="confirm-button">
+                    Confirm
+                </Button>
             </DialogActions>
         </Dialog>
     );

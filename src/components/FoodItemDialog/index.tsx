@@ -14,11 +14,11 @@ import {
     useState,
 } from 'react';
 import IFood from 'interfaces/IFood';
-import axiosInstance from 'api/http';
 import { useParams } from 'react-router-dom';
 import Snackbar from 'components/Snackbar';
 import ISnackbarMessage from 'interfaces/ISnackbarMessage';
 import IFoodItem from 'interfaces/IFoodItem';
+import { createFoodItem, getFoods, updateFoodItem } from 'api/endpoints';
 
 interface AddFoodItemDialogProps {
     foodItem?: IFoodItem;
@@ -104,8 +104,7 @@ function FoodItemDialog({
         searchParams.set('name', value);
         query.current = value;
 
-        axiosInstance()
-            .get(`/food?${searchParams}`)
+        getFoods(searchParams)
             .then((response) => {
                 const { data, request } = response;
                 const { responseURL } = request;
@@ -157,12 +156,11 @@ function FoodItemDialog({
         }
 
         if (foodItem === undefined) {
-            axiosInstance()
-                .post('/user/food', {
-                    food_id: food?.id,
-                    quantity: Number(quantity),
-                    timestamp: `${date}T00:00:00.000Z`,
-                })
+            createFoodItem({
+                food_id: food!.id,
+                quantity: Number(quantity),
+                timestamp: `${date}T00:00:00.000Z`,
+            })
                 .then((response) => {
                     const { data } = response;
 
@@ -179,18 +177,17 @@ function FoodItemDialog({
                     setMessage({
                         open: true,
                         variant: 'error',
-                        text: 'Fail to create entry',
+                        text: 'An error occurred when creating entry',
                     });
                 });
             return;
         }
 
-        axiosInstance()
-            .put('/user/food', {
-                food_id: food?.id,
-                quantity: Number(quantity),
-                timestamp: foodItem.timestamp,
-            })
+        updateFoodItem(foodItem.id, {
+            food_id: food!.id,
+            quantity: Number(quantity),
+            timestamp: foodItem.timestamp,
+        })
             .then((response) => {
                 const { data } = response;
 
@@ -207,7 +204,7 @@ function FoodItemDialog({
                 setMessage({
                     open: true,
                     variant: 'error',
-                    text: 'Fail to update entry',
+                    text: 'An error occurred when updating entry',
                 });
             });
     };
@@ -245,11 +242,22 @@ function FoodItemDialog({
                                         ...params.InputProps,
                                         type: 'search',
                                     },
+                                    htmlInput: {
+                                        ...params.inputProps,
+                                        'data-testid':
+                                            'food-autocomplete-input',
+                                    },
+                                    formHelperText: {
+                                        // @ts-expect-error error due to data-testid
+                                        'data-testid':
+                                            'food-autocomplete-error',
+                                    },
                                 }}
                             />
                         )}
                         value={foodSearch}
                         sx={{ mt: '4px' }}
+                        data-testid="food-autocomplete"
                     />
 
                     {food && (
@@ -272,11 +280,22 @@ function FoodItemDialog({
                         sx={{ mt: '8px' }}
                         value={quantity}
                         variant="standard"
+                        slotProps={{
+                            htmlInput: {
+                                'data-testid': 'quantity-input',
+                            },
+                            formHelperText: {
+                                // @ts-expect-error error due to data-testid
+                                'data-testid': 'quantity-error',
+                            },
+                        }}
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>Cancel</Button>
-                    <Button type="submit">{actionButtonText}</Button>
+                    <Button type="submit" data-testid="submit-button">
+                        {actionButtonText}
+                    </Button>
                 </DialogActions>
             </Dialog>
             <Snackbar

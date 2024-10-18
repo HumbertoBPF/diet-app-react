@@ -7,7 +7,7 @@ import {
     InputAdornment,
     TextField,
 } from '@mui/material';
-import axiosInstance from 'api/http';
+import { signup } from 'api/endpoints';
 import Snackbar from 'components/Snackbar';
 import ISnackbarMessage from 'interfaces/ISnackbarMessage';
 import { FormEvent, useState } from 'react';
@@ -80,7 +80,7 @@ function SignUp() {
         } else {
             copyErrors.set(
                 'password',
-                'The password must have at least one digit, one lowercase letter, one uppercase letter, and one non-alphanumeric character'
+                'The password must have at least one digit, one lowercase letter, one uppercase letter, one non-alphanumeric character, and be at least eight characters long'
             );
         }
 
@@ -106,13 +106,12 @@ function SignUp() {
             return;
         }
 
-        axiosInstance()
-            .post('/signup', {
-                email,
-                first_name: firstName,
-                last_name: lastName,
-                password,
-            })
+        signup({
+            email,
+            first_name: firstName,
+            last_name: lastName,
+            password,
+        })
             .then(() => {
                 setMessage({
                     text: 'Account successfully created.',
@@ -159,6 +158,15 @@ function SignUp() {
                         type="email"
                         variant="standard"
                         value={email}
+                        slotProps={{
+                            htmlInput: {
+                                'data-testid': 'email-input',
+                            },
+                            formHelperText: {
+                                // @ts-expect-error error due to data-testid
+                                'data-testid': 'email-error',
+                            },
+                        }}
                     />
                     <TextField
                         fullWidth
@@ -175,6 +183,15 @@ function SignUp() {
                         sx={{ mt: '8px' }}
                         variant="standard"
                         value={firstName}
+                        slotProps={{
+                            htmlInput: {
+                                'data-testid': 'first-name-input',
+                            },
+                            formHelperText: {
+                                // @ts-expect-error error due to data-testid
+                                'data-testid': 'first-name-error',
+                            },
+                        }}
                     />
                     <TextField
                         fullWidth
@@ -191,6 +208,15 @@ function SignUp() {
                         sx={{ mt: '8px' }}
                         variant="standard"
                         value={lastName}
+                        slotProps={{
+                            htmlInput: {
+                                'data-testid': 'last-name-input',
+                            },
+                            formHelperText: {
+                                // @ts-expect-error error due to data-testid
+                                'data-testid': 'last-name-error',
+                            },
+                        }}
                     />
                     <TextField
                         fullWidth
@@ -202,6 +228,9 @@ function SignUp() {
                             validatePassword(event.target.value)
                         }
                         slotProps={{
+                            htmlInput: {
+                                'data-testid': 'password-input',
+                            },
                             input: {
                                 endAdornment: (
                                     <InputAdornment position="end">
@@ -223,6 +252,10 @@ function SignUp() {
                                     </InputAdornment>
                                 ),
                             },
+                            formHelperText: {
+                                // @ts-expect-error error due to data-testid
+                                'data-testid': 'password-error',
+                            },
                         }}
                         sx={{ mt: '8px' }}
                         type={passwordVisible ? 'text' : 'password'}
@@ -233,6 +266,7 @@ function SignUp() {
                         sx={{ mt: '16px' }}
                         type="submit"
                         variant="contained"
+                        data-testid="submit-button"
                     >
                         Sign Up
                     </Button>
