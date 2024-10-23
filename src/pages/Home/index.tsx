@@ -21,6 +21,12 @@ function Home() {
                     );
                     setDate(value);
                 }}
+                slotProps={{
+                    day: {
+                        // @ts-expect-error error due to data-testid
+                        'data-testid': 'day-button',
+                    },
+                }}
             />
         </LocalizationProvider>
     );
